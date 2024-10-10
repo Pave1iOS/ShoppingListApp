@@ -1,10 +1,11 @@
-package com.example.shoppinglistapp
+package com.example.shoppinglistapp.presentation
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.shoppinglistapp.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,4 +18,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
     }
+    // добавление
+    // удаление
+    // редактирование
+    // получение объекта по id
 }
