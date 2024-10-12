@@ -1,25 +1,35 @@
 package com.example.shoppinglistapp.presentation
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglistapp.R
 
 class MainActivity : AppCompatActivity() {
+
+    // lateinit var позволяет проинициализировать переменную потом
+    // и нем нет необходимости создавать null тип
+    private lateinit var viewModel: MainViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        // ViewModelProvider - создаем объект (или находим)
+        // [MainViewModel::class.java] - говорим чтоб ViewModelProvider нашла MainViewModel
+        // this - говорим что управлять будем из этого класса
+        // мы конкретно говоримэй "эй ViewModelProvider найди или создай мне MainViewModel
+        // который будет связан с текущей акивностью или фрагментом"
+        viewModel = ViewModelProvider(this) [MainViewModel::class.java]
+
+        // наблюдаем за объектом shopList и все его изменения будут прилетать сюда
+        viewModel.shopList.observe(this) {
+            // выводим в log информацию о каждой полученной здесь shopItem
+            Log.d("This is", it.toString())
         }
+
+        // получаем список покупок
+        viewModel.getShopList()
     }
-    // добавление
-    // удаление
-    // редактирование
-    // получение объекта по id
 }

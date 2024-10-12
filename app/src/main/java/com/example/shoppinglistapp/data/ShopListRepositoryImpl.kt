@@ -11,9 +11,18 @@ object ShopListRepositoryImpl: ShopListRepository {
     // Создаем изменяемую коллекцию
     private var shopList = mutableListOf<ShopItem>()
 
-    
     // Хранение id
     private var id = 0
+
+    // init будет вызван после инициализации переменных
+    // в данном случае используем его для тестов ViewModel
+    // создаем mock данные
+    init {
+        for (item in 0 until 10) {
+            val shopItem = ShopItem("Item name $item", item, false)
+            addShopItem(shopItem)
+        }
+    }
 
     override fun addShopItem(item: ShopItem) {
         // если id не установлен то устанавливаем
