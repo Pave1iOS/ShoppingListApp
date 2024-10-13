@@ -1,5 +1,7 @@
 package com.example.shoppinglistapp.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.shoppinglistapp.domain.ShopItem
 import com.example.shoppinglistapp.domain.ShopListRepository
 
@@ -10,6 +12,10 @@ object ShopListRepositoryImpl: ShopListRepository {
     // В дальнейшем при использовании БД эту реализацию следует изменить
     // Создаем изменяемую коллекцию
     private var shopList = mutableListOf<ShopItem>()
+
+    // объект который будет хранить список shopItem в формате LiveData
+    // для автоматического обновления данных
+    private var shopListLD = MutableLiveData<List<ShopItem>>()
 
     // Хранение id
     private var id = 0
@@ -31,6 +37,7 @@ object ShopListRepositoryImpl: ShopListRepository {
             item.id = id++
         }
         shopList.add(item)
+        updateList()
     }
 
     override fun editShopItem(editItem: ShopItem) {
@@ -47,13 +54,19 @@ object ShopListRepositoryImpl: ShopListRepository {
         } ?: throw RuntimeException("Item id - $idItem not found")
     }
 
-    override fun getShoppingList(): List<ShopItem> {
+    override fun getShoppingList(): LiveData<List<ShopItem>> {
         // toList - возвращает копию массива, а не сам массив
         // если попытаться его поменять то изменится копия
-        return shopList.toList()
+        return shopListLD
     }
 
     override fun removeShopItem(item: ShopItem) {
         shopList.remove(item)
+        updateList()
+    }
+
+    private fun updateList() {
+        // toList() - создает копию списка
+        shopListLD.value = shopList.toList()
     }
 }

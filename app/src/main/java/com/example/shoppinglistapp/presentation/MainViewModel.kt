@@ -19,16 +19,7 @@ class MainViewModel: ViewModel() {
     // массив LiveData для <ShopItem> - он будет хранить все объекты ShopItem
     // MutableLiveData - это таже самая LiveData НО в которую мы сами можем вставлять объекты
     // и все подписчики это получают
-    val shopList = MutableLiveData<List<ShopItem>>()
-
-    fun  getShopList() {
-        val list = getShoppingListUseCase.getShoppingList()
-        // присваиваем shopList значение list
-        // это всеравно что запись shopList.value = list
-        // разница лишь в том что value может вызываться только из главного потока
-        // а postValue из любого
-        shopList.postValue(list)
-    }
+    val shopList = getShoppingListUseCase.getShoppingList()
 
     fun editShopItem(item: ShopItem) {
 
@@ -36,13 +27,9 @@ class MainViewModel: ViewModel() {
         // isSelected - который теперь будет равен противоположному значению
         val newItem = item.copy(isSelected = !item.isSelected)
         val shopItem = editShopItemUseCase.editShopItem(newItem)
-        // получаем список для обновления данных
-        getShopList()
     }
 
     fun removeShopItem(item: ShopItem) {
         removeShopItemUseCase.removeShopItem(item)
-        // получаем список для обновления данных
-        getShopList()
     }
 }

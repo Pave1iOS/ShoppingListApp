@@ -11,6 +11,7 @@ class MainActivity : AppCompatActivity() {
     // lateinit var позволяет проинициализировать переменную потом
     // и нем нет необходимости создавать null тип
     private lateinit var viewModel: MainViewModel
+    var count = 0 // delete
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,9 +28,13 @@ class MainActivity : AppCompatActivity() {
         viewModel.shopList.observe(this) {
             // выводим в log информацию о каждой полученной здесь shopItem
             Log.d("This is", it.toString())
-        }
 
-        // получаем список покупок
-        viewModel.getShopList()
+            if (count == 0) {
+                count++
+                val item = it[0]
+                viewModel.editShopItem(item)
+            }
+
+        }
     }
 }
