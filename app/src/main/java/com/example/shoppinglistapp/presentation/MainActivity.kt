@@ -2,20 +2,27 @@ package com.example.shoppinglistapp.presentation
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
+import com.example.shoppinglistapp.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
 
     // lateinit var позволяет проинициализировать переменную потом
-    // и нем нет необходимости создавать null тип
+    // и нам нет необходимости создавать null тип
     private lateinit var viewModel: MainViewModel
-    var count = 0 // delete
+    private lateinit var adapter: ShopListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        setupRecyclerView()
 
         // ViewModelProvider - создаем объект (или находим)
         // [MainViewModel::class.java] - говорим чтоб ViewModelProvider нашла MainViewModel
@@ -29,12 +36,13 @@ class MainActivity : AppCompatActivity() {
             // выводим в log информацию о каждой полученной здесь shopItem
             Log.d("This is", it.toString())
 
-            if (count == 0) {
-                count++
-                val item = it[0]
-                viewModel.editShopItem(item)
-            }
-
+            adapter.shopList = it
         }
+    }
+
+    private fun setupRecyclerView() {
+        val rvShopList = findViewById<RecyclerView>(R.id.rv_shop_list)
+        adapter = ShopListAdapter()
+        rvShopList.adapter = adapter
     }
 }

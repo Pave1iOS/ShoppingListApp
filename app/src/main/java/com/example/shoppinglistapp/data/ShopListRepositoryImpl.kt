@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.shoppinglistapp.domain.ShopItem
 import com.example.shoppinglistapp.domain.ShopListRepository
+import kotlin.Comparator as Comparator
 
 // object - делает из объекта single ton с единственной реализацией
 // методы которые реализуют логику должны помечаться impl (implementation - реализация)
@@ -11,7 +12,22 @@ object ShopListRepositoryImpl: ShopListRepository {
 
     // В дальнейшем при использовании БД эту реализацию следует изменить
     // Создаем изменяемую коллекцию
-    private var shopList = mutableListOf<ShopItem>()
+    // sortedSetOf - создает сортированный список в данном случае по id
+    // можно создать анонимный объект для аннотации сортировки по id
+     private var shopList = sortedSetOf(object : Comparator<ShopItem> {
+        override fun compare(o1: ShopItem?, o2: ShopItem?): Int {
+            // проверяем значения на null
+            if (o1 == null || o2 == null) {
+                return 0
+            }
+
+            return o1.id.compareTo(o2.id)
+        }
+    })
+    // можно использовать лямбда выражения которое будет делать тоже самое
+    // private var shopList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
+
+
 
     // объект который будет хранить список shopItem в формате LiveData
     // для автоматического обновления данных
@@ -24,7 +40,7 @@ object ShopListRepositoryImpl: ShopListRepository {
     // в данном случае используем его для тестов ViewModel
     // создаем mock данные
     init {
-        for (item in 0 until 10) {
+        for (item in 0 until 20) {
             val shopItem = ShopItem("Item name $item", item, false)
             addShopItem(shopItem)
         }
