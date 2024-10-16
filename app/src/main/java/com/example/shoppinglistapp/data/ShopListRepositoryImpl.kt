@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.shoppinglistapp.domain.ShopItem
 import com.example.shoppinglistapp.domain.ShopListRepository
+import kotlin.random.Random
 import kotlin.Comparator as Comparator
 
 // object - делает из объекта single ton с единственной реализацией
@@ -41,7 +42,7 @@ object ShopListRepositoryImpl: ShopListRepository {
     // создаем mock данные
     init {
         for (item in 0 until 20) {
-            val shopItem = ShopItem("Item name $item", item, false)
+            val shopItem = ShopItem("Item name $item", item, Random.nextBoolean())
             addShopItem(shopItem)
         }
     }

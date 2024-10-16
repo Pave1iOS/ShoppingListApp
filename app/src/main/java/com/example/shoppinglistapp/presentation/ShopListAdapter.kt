@@ -1,5 +1,6 @@
 package com.example.shoppinglistapp.presentation
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,15 @@ import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.domain.ShopItem
 
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
+
+    // создаем лямбда выражение для реализации длинного нажатия
+    var shopItemLongClickListener: ((ShopItem) -> Unit)? = null
+
+    // создаем лямбда выражение для реализации обычного нажатия
+    var shopItemClickListener: ((ShopItem) -> Unit)? = null
+
+    // создаем лямбда выражение для реализации свайпа
+    var shopItemOnSwipeListener: ((ShopItem) -> Unit)? = null
 
     var shopList = listOf<ShopItem>()
         set(value) {
@@ -23,13 +33,28 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     // вызывается при создании группы View (столько сколько отображается на экране
     // + несколько сверху и снизу)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
+
+        val item = shopList[viewType]
+
+        //можно через конструкуцию when
+        val itemLayout = when(viewType) {
+            IS_ACTIVE -> R.layout.item_shop_is_active
+            IS_INACTIVE -> R.layout.item_shop_is_inactive
+            // если в будущем забыть обработать viewType то приложение упадет с этой ошибкой
+            else -> throw RuntimeException("view type is unknown $viewType")
+        }
+
+        // можно через конструкцию if
+//        val itemLayout = if (viewType == IS_ACTIVE) {
+//            R.layout.item_shop_is_active
+//        } else {
+//            R.layout.item_shop_is_inactive
+//        }
+
         // LayoutInflater - нужен что бы преобразовать макет во View элемент
         // с которым можно работать из кода
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.item_shop_is_active,
-            parent,
-            false
-        )
+        val view = LayoutInflater
+            .from(parent.context).inflate(itemLayout, parent, false)
 
         return ShopItemViewHolder(view)
     }
@@ -51,17 +76,38 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
         // при долгом нажатии меняет значение CardView
         holder.view.setOnLongClickListener {
+            // invoke для опциаональных типов и просто без него для обычных
+            shopItemLongClickListener?.invoke(shopItem)
             true
         }
+
+        holder.view.setOnClickListener {
+            shopItemClickListener?.invoke(shopItem)
+        }
+
+        shopItemOnSwipeListener?.invoke(shopItem)
     }
 
     override fun getItemViewType(position: Int): Int {
-        return super.getItemViewType(position)
+        val shopItem = shopList[position]
+
+        return if (shopItem.isSelected) {
+            return IS_ACTIVE
+        } else {
+            return IS_INACTIVE
+        }
     }
 
     // вызывается каждый раз при переиспользовании элемента (при скроле)
     override fun onViewRecycled(holder: ShopItemViewHolder) {
         super.onViewRecycled(holder)
+    }
+
+    companion object {
+        const val IS_ACTIVE = 0
+        const val IS_INACTIVE = 1
+
+        const val MAX_POOL = 5
     }
 
     // ViewHolder нужен для удержания View что бы они пересоздавались минимальное
