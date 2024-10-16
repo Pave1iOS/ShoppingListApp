@@ -57,31 +57,48 @@ class MainActivity : AppCompatActivity() {
         }
 
         // меняем состояние ячейки при долгом нажатии через лямбду
-        shopListAdapter.shopItemLongClickListener = {
-            viewModel.editShopItem(it)
-        }
+        setupLongClickListener()
 
         // логика при нажатии на ячейку
+        setupClickListener()
+
+        // удаление элемента по свайпу
+        setupSwipeListener(rvShopList)
+    }
+
+    private fun setupSwipeListener(rvShopList: RecyclerView) {
+        val callback = object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // получаем элемент который свайпнули
+                val item = shopListAdapter.shopList[viewHolder.adapterPosition]
+                viewModel.removeShopItem(item)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(rvShopList)
+    }
+
+
+    private fun setupClickListener() {
         shopListAdapter.shopItemClickListener = {
             Log.d("setOnClickListener", "Click item ${it.id}")
         }
+    }
 
-        shopListAdapter.shopItemOnSwipeListener = {
-            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-                override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
-                ): Boolean {
-                    return false
-                }
-
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    Log.d("onSwiped", "swite ${it.toString()}")
-                    viewHolder.adapterPosition
-//                    viewModel.removeShopItem(it)
-                }
-            }).attachToRecyclerView(rvShopList)
+    private fun setupLongClickListener() {
+        shopListAdapter.shopItemLongClickListener = {
+            viewModel.editShopItem(it)
         }
     }
 }
