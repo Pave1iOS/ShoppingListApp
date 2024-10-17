@@ -5,11 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.domain.ShopItem
 
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
+
+    var count = 0 // remove
 
     // создаем лямбда выражение для реализации длинного нажатия
     var shopItemLongClickListener: ((ShopItem) -> Unit)? = null
@@ -17,16 +20,23 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     // создаем лямбда выражение для реализации обычного нажатия
     var shopItemClickListener: ((ShopItem) -> Unit)? = null
 
-    // создаем лямбда выражение для реализации свайпа
-    var shopItemOnSwipeListener: ((ShopItem) -> Unit)? = null
-
     var shopList = listOf<ShopItem>()
         set(value) {
+
+            //передаем текущий список и новый
+            val callback = ShopListDiffCallback(shopList, value)
+
+            // здесь выполнятся все расчеты и сравнения списков
+            val diffResult = DiffUtil.calculateDiff(callback)
+
+            // что бы адаптер сделал изменения
+            // если объект изменился или удалился то обвлять будет не весь список
+            // а конкретную ячейку
+            diffResult.dispatchUpdatesTo(this)
+
             // field текущее значение свойства
             // value новое значение свойство
             field = value
-            // уведомляем что данные изменились и интерфейс должен быть обновлен
-            notifyDataSetChanged()
         }
 
     // метод говорит о том как создавать View
@@ -70,6 +80,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         // один элемент списка
         val shopItem = shopList[position]
 
+        Log.d("onBindViewHolder", "Вызван ${++count}")
+
         // берем элементы из holder который хранит View
         holder.tvName.text = shopItem.name
         holder.tvCount.text = shopItem.count.toString()
@@ -84,8 +96,6 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         holder.view.setOnClickListener {
             shopItemClickListener?.invoke(shopItem)
         }
-
-        shopItemOnSwipeListener?.invoke(shopItem)
     }
 
     override fun getItemViewType(position: Int): Int {
