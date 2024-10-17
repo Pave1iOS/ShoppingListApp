@@ -2,15 +2,11 @@ package com.example.shoppinglistapp.presentation
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
-import com.example.shoppinglistapp.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,7 +33,8 @@ class MainActivity : AppCompatActivity() {
             // выводим в log информацию о каждой полученной здесь shopItem
             Log.d("This is", it.toString())
 
-            shopListAdapter.shopList = it
+            // обновляет список элементов
+            shopListAdapter.submitList(it)
         }
     }
 
@@ -81,7 +78,8 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 // получаем элемент который свайпнули
-                val item = shopListAdapter.shopList[viewHolder.adapterPosition]
+                // currentList текущий список над которым работает адаптер
+                val item = shopListAdapter.currentList[viewHolder.adapterPosition]
                 viewModel.removeShopItem(item)
             }
         }
