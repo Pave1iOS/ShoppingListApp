@@ -12,6 +12,7 @@ import com.example.shoppinglistapp.domain.ShopItem
 
 class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
 
+    // для проверки вызовов методов
     var count = 0 // remove
 
     // создаем лямбда выражение для реализации длинного нажатия
@@ -27,6 +28,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
             val callback = ShopListDiffCallback(shopList, value)
 
             // здесь выполнятся все расчеты и сравнения списков
+            // работает в главном потоке
             val diffResult = DiffUtil.calculateDiff(callback)
 
             // что бы адаптер сделал изменения
