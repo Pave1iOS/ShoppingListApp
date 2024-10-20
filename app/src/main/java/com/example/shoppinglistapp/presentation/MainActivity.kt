@@ -1,5 +1,6 @@
 package com.example.shoppinglistapp.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +37,14 @@ class MainActivity : AppCompatActivity() {
 
             // обновляет список элементов
             shopListAdapter.submitList(it)
+        }
+
+        // получили кнопку
+        val butonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
+        butonAddItem.setOnClickListener {
+            val intent = ShopItemActivity.intentAddItem(this)
+            // запускаем intent
+            startActivity(intent)
         }
     }
 
@@ -90,7 +100,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.shopItemClickListener = {
-            Log.d("setOnClickListener", "Click item ${it.id}")
+            // передаем intent с id
+            val intent = ShopItemActivity.intentEditItem(this, it.id)
+            // запускаем intent
+            startActivity(intent)
+            Log.d("shopItemClickListener", intent.toString())
         }
     }
 
