@@ -16,154 +16,153 @@ import com.google.android.material.textfield.TextInputLayout
 
 class ShopItemActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: ShopItemViewModel
-
-    private lateinit var tilName: TextInputLayout
-    private lateinit var tilCount: TextInputLayout
-    private lateinit var etName: EditText
-    private lateinit var etCount: EditText
-    private lateinit var btnSave: Button
-
-    // хранит мод (значение intent)
-    // по умолчанию значение не известно
-    private var screenMode = UNKNOWN_MODE
-
-    // хранит id (значение intent)
-    // по умолчанию значение не известно (-1)
-    private var shopItemID = ShopItem.UNDEFIND_ID
+//    private lateinit var viewModel: ShopItemViewModel
+//
+//    private lateinit var tilName: TextInputLayout
+//    private lateinit var tilCount: TextInputLayout
+//    private lateinit var etName: EditText
+//    private lateinit var etCount: EditText
+//    private lateinit var btnSave: Button
+//
+//    // хранит мод (значение intent)
+//    // по умолчанию значение не известно
+//    private var screenMode = UNKNOWN_MODE
+//
+//    // хранит id (значение intent)
+//    // по умолчанию значение не известно (-1)
+//    private var shopItemID = ShopItem.UNDEFIND_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
-
-        //проверяем intent
-        parseIntent()
-
-        // инициализируем view по id
-        createViews()
-
-        // присваиваем значение viewModel
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-
-        // проверяем mod сцены и в зависимости от этого генерируем логику
-        createSceneMode()
-
-        // создаем наблюдатель за полями ввода
-        textChangeListener()
-
-        // метод где лежат все наблюдатели
-        observedViewModel()
+//
+//        //проверяем intent
+//        parseIntent()
+//
+//        // инициализируем view по id
+//        createViews()
+//
+//        // присваиваем значение viewModel
+//        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+//
+//        // проверяем mod сцены и в зависимости от этого генерируем логику
+//        createSceneMode()
+//
+//        // создаем наблюдатель за полями ввода
+//        textChangeListener()
+//
+//        // метод где лежат все наблюдатели
+//        observedViewModel()
     }
-
-
-    private fun createSceneMode() {
-        // в зависимости от мода запускаем нужное нам поведение экрана
-        when (screenMode) {
-            MODE_EDIT -> runEditScene()
-            MODE_ADD -> runAddScene()
-        }
-    }
-
-    private fun runAddScene() {
-        Log.d("screenMode", "runAddScene")
-
-        btnSave.setOnClickListener {
-            viewModel.addShopItem(etName.text?.toString(), etCount.text.toString())
-        }
-    }
-
-    private fun runEditScene() {
-        Log.d("screenMode", "runEditScene")
-
-        viewModel.getShopItem(shopItemID)
-
-        viewModel.shopItem.observe(this) {
-            etName.setText(it.name)
-            etCount.setText(it.count.toString())
-        }
-
-        btnSave.setOnClickListener {
-            viewModel.editShopItem(etName.text?.toString(), etCount.text.toString())
-        }
-    }
-
-    private fun observedViewModel() {
-        // Отображает ошибку если поле пустое
-        viewModel.errorInputName.observe(this) {
-            val message = if (it) {
-                "Поле не должно быть пустым"
-            } else {
-                null
-            }
-            tilName.error = message
-        }
-
-        // Отображает ошибку если поле пустое
-        viewModel.errorInputCount.observe(this) {
-            val message = if (it) {
-                "Поле не должно быть пустым"
-            } else {
-                null
-            }
-            tilCount.error = message
-        }
-
-        viewModel.finishFlow.observe(this) {
-            finish()
-        }
-    }
-
-    // наблюдатель за вводом текста
-    // сбратывает error если начинаем вводить значения в поле
-    private fun textChangeListener() {
-        etName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.resetErrorInputName()
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
-        etCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.resetErrorInputCount()
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-    }
-
-
-    // проверка что все параметры были переданы
-    private fun parseIntent() {
-        // если в intent не будет ключа (параметра) EXTRA_SCREEN_MODE
-        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) throw RuntimeException("screen mode is absent")
-        // создаем мод по ключу
-        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
-        // если этот мод не имеет значений MODE_EDIT и MODE_ADD
-        if (mode != MODE_EDIT && mode != MODE_ADD) throw RuntimeException("mode is absent")
-        // если имеет то присваиваем значение
-        screenMode = mode
-        // если мод редактирования
-        if (mode == MODE_EDIT) {
-            // то там обязательно должен присутствовать параметр id
-            if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) throw RuntimeException("id is absent")
-            // присваиваем id из intent и значение по умолчанию
-            shopItemID = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFIND_ID)
-        }
-    }
-
-    private fun createViews() {
-        tilName = findViewById<TextInputLayout>(R.id.til_name)
-        tilCount = findViewById<TextInputLayout>(R.id.til_count)
-        etName = findViewById<EditText>(R.id.et_name)
-        etCount = findViewById<EditText>(R.id.et_count)
-        btnSave = findViewById<Button>(R.id.btn_save)
-    }
+//
+//    private fun createSceneMode() {
+//        // в зависимости от мода запускаем нужное нам поведение экрана
+//        when (screenMode) {
+//            MODE_EDIT -> runEditScene()
+//            MODE_ADD -> runAddScene()
+//        }
+//    }
+//
+//    private fun runAddScene() {
+//        Log.d("screenMode", "runAddScene")
+//
+//        btnSave.setOnClickListener {
+//            viewModel.addShopItem(etName.text?.toString(), etCount.text.toString())
+//        }
+//    }
+//
+//    private fun runEditScene() {
+//        Log.d("screenMode", "runEditScene")
+//
+//        viewModel.getShopItem(shopItemID)
+//
+//        viewModel.shopItem.observe(this) {
+//            etName.setText(it.name)
+//            etCount.setText(it.count.toString())
+//        }
+//
+//        btnSave.setOnClickListener {
+//            viewModel.editShopItem(etName.text?.toString(), etCount.text.toString())
+//        }
+//    }
+//
+//    private fun observedViewModel() {
+//        // Отображает ошибку если поле пустое
+//        viewModel.errorInputName.observe(this) {
+//            val message = if (it) {
+//                "Поле не должно быть пустым"
+//            } else {
+//                null
+//            }
+//            tilName.error = message
+//        }
+//
+//        // Отображает ошибку если поле пустое
+//        viewModel.errorInputCount.observe(this) {
+//            val message = if (it) {
+//                "Поле не должно быть пустым"
+//            } else {
+//                null
+//            }
+//            tilCount.error = message
+//        }
+//
+//        viewModel.finishFlow.observe(this) {
+//            finish()
+//        }
+//    }
+//
+//    // наблюдатель за вводом текста
+//    // сбратывает error если начинаем вводить значения в поле
+//    private fun textChangeListener() {
+//        etName.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                viewModel.resetErrorInputName()
+//            }
+//
+//            override fun afterTextChanged(s: Editable?) {}
+//        })
+//
+//        etCount.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                viewModel.resetErrorInputCount()
+//            }
+//
+//            override fun afterTextChanged(s: Editable?) {}
+//        })
+//    }
+//
+//
+//    // проверка что все параметры были переданы
+//    private fun parseIntent() {
+//        // если в intent не будет ключа (параметра) EXTRA_SCREEN_MODE
+//        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) throw RuntimeException("screen mode is absent")
+//        // создаем мод по ключу
+//        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
+//        // если этот мод не имеет значений MODE_EDIT и MODE_ADD
+//        if (mode != MODE_EDIT && mode != MODE_ADD) throw RuntimeException("mode is absent")
+//        // если имеет то присваиваем значение
+//        screenMode = mode
+//        // если мод редактирования
+//        if (mode == MODE_EDIT) {
+//            // то там обязательно должен присутствовать параметр id
+//            if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) throw RuntimeException("id is absent")
+//            // присваиваем id из intent и значение по умолчанию
+//            shopItemID = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFIND_ID)
+//        }
+//    }
+//
+//    private fun createViews() {
+//        tilName = findViewById<TextInputLayout>(R.id.til_name)
+//        tilCount = findViewById<TextInputLayout>(R.id.til_count)
+//        etName = findViewById<EditText>(R.id.et_name)
+//        etCount = findViewById<EditText>(R.id.et_count)
+//        btnSave = findViewById<Button>(R.id.btn_save)
+//    }
 
     companion object {
         private const val EXTRA_SCREEN_MODE = "extra_mode"
