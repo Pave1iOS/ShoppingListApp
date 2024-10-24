@@ -126,7 +126,12 @@ class ShopItemFragment(
         }
 
         viewModel.finishFlow.observe(viewLifecycleOwner) {
-            finish()
+            // onBackPressedDispatcher делает тоже самое что и при нажатии
+            // кнопки назад на телефоне
+            activity?.onBackPressedDispatcher
+            // activity - получаем ссылку на activity к которой прикреплен фрагмент
+            // так же можно сделать то же самое и через requireActivity но разница в том
+            // что activity возвращает null тип а requireActivity notnull
         }
     }
 
@@ -137,7 +142,7 @@ class ShopItemFragment(
         }
 
         if (screenMode == MODE_EDIT && shopItemID == ShopItem.UNDEFIND_ID) {
-            throw RuntimeException("id is absent")
+            throw RuntimeException("id is absent /$EXTRA_SHOP_ITEM_ID")
         }
     }
 
@@ -185,6 +190,16 @@ class ShopItemFragment(
         private const val MODE_ADD = "mode_add"
         private const val UNKNOWN_MODE = "unknown"
         private const val FIELD_ERROR = "Error"
+
+        // передаем нужный нам  Fragment в зависимости от метода
+        fun newInstanceAdd(): ShopItemFragment {
+            return ShopItemFragment(MODE_ADD)
+        }
+
+        fun newInstanceEdit(id: Int): ShopItemFragment {
+            return ShopItemFragment(MODE_EDIT, id)
+        }
+
 
         // запускать экран в режиме добавления
         fun intentAddItem(context: Context): Intent {
