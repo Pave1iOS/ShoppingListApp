@@ -1,7 +1,5 @@
 package com.example.shoppinglistapp.presentation
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,16 +15,7 @@ import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.domain.ShopItem
 import com.google.android.material.textfield.TextInputLayout
 
-class ShopItemFragment(
-
-    // screenMode хранит мод (значение intent)
-    // по умолчанию значение не известно
-    private val screenMode: String = UNKNOWN_MODE,
-
-    // shopItemID хранит id (значение intent)
-    // по умолчанию значение не известно (-1)
-    private val shopItemID: Int = ShopItem.UNDEFIND_ID
-) : Fragment() {
+class ShopItemFragment : Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
 
@@ -35,6 +24,23 @@ class ShopItemFragment(
     private lateinit var etName: EditText
     private lateinit var etCount: EditText
     private lateinit var btnSave: Button
+
+    // screenMode хранит мод (значение intent)
+    // по умолчанию значение не известно
+    private var screenMode: String = UNKNOWN_MODE
+
+    // shopItemID хранит id (значение intent)
+    // по умолчанию значение не известно (-1)
+    private var shopItemID: Int = ShopItem.UNDEFIND_ID
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        //проверяем параметры и присваиваем им значения
+        // это нужно делать в onCreate когда надо что бы в других
+        // методах уже были значения из метода parseParams
+        parseParams()
+    }
 
     // Метод жизненного цикла фрагмента onCreateView нужен для того, чтобы создать View из макета
     override fun onCreateView(
@@ -47,9 +53,6 @@ class ShopItemFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        //проверяем intent
-        parseParams()
 
         // инициализируем view по id
         createViews(view)
@@ -137,12 +140,23 @@ class ShopItemFragment(
 
     // проверка что все параметры были переданы
     private fun parseParams() {
-        if (screenMode != MODE_ADD && screenMode != MODE_EDIT) {
-            throw RuntimeException("mode is absent")
-        }
-
-        if (screenMode == MODE_EDIT && shopItemID == ShopItem.UNDEFIND_ID) {
-            throw RuntimeException("id is absent /$EXTRA_SHOP_ITEM_ID")
+        // requireArguments - если мы уверены что пераметры были переданы
+        // к этому моменту
+        val arg = requireArguments()
+        // если arg не будет ключа (параметра) SCREEN_MODE
+        if (!arg.containsKey(SCREEN_MODE)) throw RuntimeException("screen mode is absent")
+        // создаем мод по ключу
+        val mode = arg.getString(SCREEN_MODE)
+        // если этот мод не имеет значений MODE_EDIT и MODE_ADD
+        if (mode != MODE_EDIT && mode != MODE_ADD) throw RuntimeException("mode is absent")
+        // если имеет то присваиваем значение
+        screenMode = mode
+        // если мод редактирования
+        if (mode == MODE_EDIT) {
+            // то там обязательно должен присутствовать параметр id
+            if (!arg.containsKey(SHOP_ITEM_ID)) throw RuntimeException("id is absent")
+            // присваиваем id из intent и значение по умолчанию
+            shopItemID = arg.getInt(SHOP_ITEM_ID, ShopItem.UNDEFIND_ID)
         }
     }
 
@@ -182,10 +196,9 @@ class ShopItemFragment(
     }
 
 
-
     companion object {
-        private const val EXTRA_SCREEN_MODE = "extra_mode"
-        private const val EXTRA_SHOP_ITEM_ID = "extra_shop_item_id"
+        private const val SCREEN_MODE = "extra_mode"
+        private const val SHOP_ITEM_ID = "extra_shop_item_id"
         private const val MODE_EDIT = "mode_edit"
         private const val MODE_ADD = "mode_add"
         private const val UNKNOWN_MODE = "unknown"
@@ -193,30 +206,25 @@ class ShopItemFragment(
 
         // передаем нужный нам  Fragment в зависимости от метода
         fun newInstanceAdd(): ShopItemFragment {
-            return ShopItemFragment(MODE_ADD)
+            // apply - вызывается у объекта и позволяет в лямбде
+            // применить К НЕМУ ЖЕ какие то свойства и потом ВОЗВРАЩАЕТ
+            // этот же объект с примененнными свойствами
+            return ShopItemFragment().apply {
+                // arguments - позволяет передать аргументы в фрагметн
+                // и при его пересоздании эти аргументы будут переданы снова
+                arguments = Bundle().apply {
+                    putString(SCREEN_MODE, MODE_ADD)
+                }
+            }
         }
 
         fun newInstanceEdit(id: Int): ShopItemFragment {
-            return ShopItemFragment(MODE_EDIT, id)
-        }
-
-
-        // запускать экран в режиме добавления
-        fun intentAddItem(context: Context): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_ADD)
-            return intent
-        }
-
-        // запускать экран в режиме редактирования
-        fun intentEditItem(context: Context, id: Int): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            // говорим в каком режиме открывать окно
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_EDIT)
-            // передаем id
-            intent.putExtra(EXTRA_SHOP_ITEM_ID, id)
-
-            return intent
+            return ShopItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString(SCREEN_MODE, MODE_EDIT)
+                    putInt(SHOP_ITEM_ID, id)
+                }
+            }
         }
     }
 }
