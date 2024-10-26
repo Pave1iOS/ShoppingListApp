@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -17,9 +19,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
 
+    var shopItemContainer: FragmentContainerView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        shopItemContainer = findViewById(R.id.shop_item_container)
 
         setupRecyclerView()
 
@@ -42,10 +48,34 @@ class MainActivity : AppCompatActivity() {
         // получили кнопку
         val butonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
         butonAddItem.setOnClickListener {
-            val intent = ShopItemActivity.intentAddItem(this)
-            // запускаем intent
-            startActivity(intent)
+            if (isSingleScreenMode()) {
+                val intent = ShopItemActivity.intentAddItem(this)
+                // запускаем intent
+                startActivity(intent)
+            } else {
+                runFragmentContainer(ShopItemFragment.newInstanceAdd())
+            }
         }
+    }
+
+    // метод переключает режимы отображения
+    // для портретной ориентации и для альбомной
+    private fun isSingleScreenMode(): Boolean {
+        return shopItemContainer == null
+    }
+
+    private fun runFragmentContainer(fragment: ShopItemFragment) {
+        // удаляет последний экран из стека
+        // а если экрана нет то и удалять ничего не будет (не обязательный метод)
+        supportFragmentManager.popBackStack()
+        // метод позволяет положить фрагмент в контейнер
+        supportFragmentManager.beginTransaction()
+            // ложем fragment в контейнер по id
+            .replace(R.id.shop_item_container, fragment)
+            // ложем экран в стэк (не обязательный метод)
+            .addToBackStack(null)
+            // сохраняем изменнения
+            .commit()
     }
 
     private fun setupRecyclerView() {
@@ -100,11 +130,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.shopItemClickListener = {
-            // передаем intent с id
-            val intent = ShopItemActivity.intentEditItem(this, it.id)
-            // запускаем intent
-            startActivity(intent)
-            Log.d("shopItemClickListener", intent.toString())
+            if(isSingleScreenMode()) {
+                // передаем intent с id
+                val intent = ShopItemActivity.intentEditItem(this, it.id)
+                // запускаем intent
+                startActivity(intent)
+            } else {
+                runFragmentContainer(ShopItemFragment.newInstanceEdit(it.id))
+            }
         }
     }
 

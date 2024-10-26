@@ -3,19 +3,11 @@ package com.example.shoppinglistapp.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
-import android.widget.Button
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.domain.ShopItem
-import com.google.android.material.textfield.TextInputLayout
 
 class ShopItemActivity : AppCompatActivity() {
-
 
     // хранит мод (значение intent)
     // по умолчанию значение не известно
@@ -32,8 +24,13 @@ class ShopItemActivity : AppCompatActivity() {
         //проверяем intent
         parseIntent()
 
-        // проверяем mod сцены и в зависимости от этого генерируем логику
-        createSceneMode()
+        // проверяем пересоздавалась ли Activity
+        if (savedInstanceState == null) {
+            // если Activity не создавалась
+            // проверяем mod сцены и в зависимости от этого генерируем логику
+            // создаем фрагмент
+            createSceneMode()
+        }
     }
 
     private fun createSceneMode() {
@@ -45,9 +42,9 @@ class ShopItemActivity : AppCompatActivity() {
         }
         // что бы добавить фрагмент в активити из кода используется класс FragmentManager
         supportFragmentManager.beginTransaction()
-            // добавляем фрагмент
-            .add(R.id.shop_item_container, fragment).commit() // commit делает что бы transaction
-        // выполнилась
+            // replace - удаляет страй фрагрент и создает новый (заменяет старый)
+            // add - не удаляет старые экраны и всегда (создает новый)
+            .replace(R.id.shop_item_container, fragment).commit()
     }
 
         // проверка что все параметры были переданы
