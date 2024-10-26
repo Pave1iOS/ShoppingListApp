@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        Log.d("lifecycle", "onCreate MainActiviy")
         shopItemContainer = findViewById(R.id.shop_item_container)
 
         setupRecyclerView()
@@ -58,6 +58,36 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("lifecycle", "onStart MainActiviy")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("lifecycle", "onResume MainActiviy")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("lifecycle", "onPause MainActiviy")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("lifecycle", "onStop MainActiviy")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("lifecycle", "onDestroy MainActiviy")
+    }
+
+
+
+
+
 
     // Данная Activity сама реализует данный интерфейс
     // и сама устанавливает как ей поступить при вызове метода

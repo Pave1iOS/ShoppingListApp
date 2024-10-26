@@ -42,6 +42,8 @@ class ShopItemFragment : Fragment() {
     // инициализация onEditingFinishedListener
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        Log.d("lifecycle", "onAttach")
+
         // если Activity реализует Interface
         if (context is OnEditingFinishedListener) {
             // onEditingFinishedListener = context
@@ -55,6 +57,7 @@ class ShopItemFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("lifecycle", "onCreate")
 
         //проверяем параметры и присваиваем им значения
         // это нужно делать в onCreate когда надо что бы в других
@@ -68,11 +71,14 @@ class ShopItemFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("lifecycle", "onCreateView")
+
         return inflater.inflate(R.layout.fragment_shop_item, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("lifecycle", "onViewCreated")
 
         // инициализируем view по id
         createViews(view)
@@ -90,6 +96,50 @@ class ShopItemFragment : Fragment() {
         observedViewModel()
 
     }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("lifecycle", "onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("lifecycle", "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("lifecycle", "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("lifecycle", "onStop")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("lifecycle", "onDestroyView")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("lifecycle", "onDestroy")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d("lifecycle", "onDetach")
+    }
+
+
+
+
+
+
+
+
+
 
     private fun createSceneMode() {
         // в зависимости от мода запускаем нужное нам поведение экрана
