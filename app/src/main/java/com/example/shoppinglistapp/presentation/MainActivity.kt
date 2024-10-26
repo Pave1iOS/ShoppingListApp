@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
 
-    var shopItemContainer: FragmentContainerView? = null
+    private var shopItemContainer: FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +66,14 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         // показываем сообщение пользователю
         Toast.makeText(this, "Success", Toast.LENGTH_LONG).show()
         // удаляем фрагмент с экрана
+        // Если метод вызвать без параметров, то он удалит
+        // один последний фрагмент из бэкстека.
+
+        // Если в качестве параметра передать имя фрагмента,
+        // то метод удалит из бэкстека все фрагменты, которые
+        // были запущены после указанного. В зависимости от
+        // переданного флага сам указанный фрагмент может
+        // быть также удален из бэкстека
         supportFragmentManager.popBackStack()
     }
 
