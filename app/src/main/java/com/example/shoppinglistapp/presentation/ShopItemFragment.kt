@@ -1,5 +1,6 @@
 package com.example.shoppinglistapp.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,6 +19,9 @@ import com.google.android.material.textfield.TextInputLayout
 class ShopItemFragment : Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
+    // здесь нельзя устанавливать значения для интерфейса
+    // они будут сброшены при пересоздании фрагмента (при перевороте экрана)
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
     private lateinit var tilName: TextInputLayout
     private lateinit var tilCount: TextInputLayout
@@ -32,6 +36,22 @@ class ShopItemFragment : Fragment() {
     // shopItemID хранит id (значение intent)
     // по умолчанию значение не известно (-1)
     private var shopItemID: Int = ShopItem.UNDEFIND_ID
+
+    // метод вызовится когда фрагмент будет прикреплен к Activity
+    // вызывается самым первым
+    // инициализация onEditingFinishedListener
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // если Activity реализует Interface
+        if (context is OnEditingFinishedListener) {
+            // onEditingFinishedListener = context
+            // означает что сама Activity знает как ей реализовать данный интерфейс
+            onEditingFinishedListener = context
+        } else {
+            // если Activity не знает как ей реализовать данный интерфейс
+            throw RuntimeException("Activity no implement onEditingFinishedListener")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,10 +151,13 @@ class ShopItemFragment : Fragment() {
         viewModel.finishFlow.observe(viewLifecycleOwner) {
             // onBackPressedDispatcher делает тоже самое что и при нажатии
             // кнопки назад на телефоне
-            activity?.onBackPressedDispatcher
+//            activity?.onBackPressedDispatcher
             // activity - получаем ссылку на activity к которой прикреплен фрагмент
             // так же можно сделать то же самое и через requireActivity но разница в том
             // что activity возвращает null тип а requireActivity notnull
+
+            // вызываем реализацию метода интерфейса когда нажимается кнопка
+            onEditingFinishedListener.onEditingFinished()
         }
     }
 
@@ -195,6 +218,11 @@ class ShopItemFragment : Fragment() {
         })
     }
 
+    // если Fragment хочет что то сообщить Activity то это нужно делать через Interface
+    // здесь мы сообзаем что работа мода окончена
+    interface OnEditingFinishedListener {
+        fun onEditingFinished()
+    }
 
     companion object {
         private const val SCREEN_MODE = "extra_mode"

@@ -3,6 +3,7 @@ package com.example.shoppinglistapp.presentation
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -12,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     // lateinit var позволяет проинициализировать переменную потом
     // и нам нет необходимости создавать null тип
@@ -56,6 +57,16 @@ class MainActivity : AppCompatActivity() {
                 runFragmentContainer(ShopItemFragment.newInstanceAdd())
             }
         }
+    }
+
+    // Данная Activity сама реализует данный интерфейс
+    // и сама устанавливает как ей поступить при вызове метода
+    // здесь мы просто скроем фрагмент
+    override fun onEditingFinished() {
+        // показываем сообщение пользователю
+        Toast.makeText(this, "Success", Toast.LENGTH_LONG).show()
+        // удаляем фрагмент с экрана
+        supportFragmentManager.popBackStack()
     }
 
     // метод переключает режимы отображения

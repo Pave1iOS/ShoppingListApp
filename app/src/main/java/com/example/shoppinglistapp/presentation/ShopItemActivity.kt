@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.domain.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     // хранит мод (значение intent)
     // по умолчанию значение не известно
@@ -31,6 +31,13 @@ class ShopItemActivity : AppCompatActivity() {
             // создаем фрагмент
             createSceneMode()
         }
+    }
+
+    // Данная Activity сама реализует данный интерфейс
+    // и сама устанавливает как ей поступить при вызове метода
+    // здесь мы просто закроем экран
+    override fun onEditingFinished() {
+        finish()
     }
 
     private fun createSceneMode() {
@@ -65,7 +72,6 @@ class ShopItemActivity : AppCompatActivity() {
             shopItemID = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFIND_ID)
         }
     }
-
 
     companion object {
         private const val EXTRA_SCREEN_MODE = "extra_mode"
